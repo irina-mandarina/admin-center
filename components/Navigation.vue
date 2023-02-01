@@ -1,10 +1,6 @@
 <template>
-    <div class="fixed t-0 left-0 w-1/6 h-full border-r border-gray shadow-inner">
-        <div class="relative border-b border-gray p-6">
-            <span class="mx-1 bg-red-600 pl-0 pb-0 pr-2 pt-3 text-xs font-bold text-white">RMS</span>
-            <span class="font-bold">Admin</span> Center
-        </div>
-        <div class="font-bold pl-4 py-4 border-b border-gray">
+    <div class="w-1/6 absolute bg-white h-full border-r border-gray shadow-inner">
+        <div class="font-bold h-16 border-b py-4 text-center border-gray overflow-hidden">
             Tokio Marine America
         </div>
         <div class="mt-6">
