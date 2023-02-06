@@ -21,62 +21,50 @@
     let owner = ref(null)
     let resource = ref(null)
     let status = ref(null)
-    let activeFilters = []
-    let jobsOnDisplay = computed(() => {
-        let result = jobs
-        if (activeFilters.includes('name')) {
-            result = result.filter(
-                (job) => job.name.includes(keyword.value)
-            )
-            console.log(result)
-        }
+    let jobsOnDisplay = ref(jobs)
 
-        if (activeFilters.includes('id')) {
-            jobsOnDisplay.value = jobsOnDisplay.value.filter(
-                (job) => job.id.toString().includes(jobId.value)
-            )
-        }
-
-        if (activeFilters.includes('type')) {
-            jobsOnDisplay.value = jobsOnDisplay.value.filter(
-                (job) => job.type === jobType.value
-            )    
-        }
-
-        if (activeFilters.includes('owner')) {
-            jobsOnDisplay.value = jobsOnDisplay.value.filter(
-                (job) => job.owner.includes(owner.value)
-            )
-        }
-
-        if (activeFilters.includes('resource')) {
-            jobsOnDisplay.value = jobsOnDisplay.value.filter(
-                (job) => job.resource === resource
-            )
-        }
-
-        if (activeFilters.includes('status')) { 
-            jobsOnDisplay.value = jobsOnDisplay.value.filter(
-                (job) => job.status === status
-            )
-        }
-
-        return result
-    })
+    function filterByKeyword() {
+        jobsOnDisplay.value = jobsOnDisplay.value.filter(
+            (job) => job.name.includes(keyword.value)
+        )
+    }
+    
+    function filterByJobId() {
+        jobsOnDisplay.value = jobsOnDisplay.value.filter(
+            (job) => job.id.toString().includes(jobId.value)
+        )
+    }
     
     function filterByJobType(jobTypeArg) {
-        activeFilters.push('type')
-        jobType.value = jobTypeArg
+        if (jobTypeArg !== null) {
+            jobType.value = jobTypeArg
+        }
+
+        jobsOnDisplay.value = jobsOnDisplay.value.filter(
+            (job) => job.type === jobType.value
+        )
+    }
+
+    function filterByOwner() {
+        jobsOnDisplay.value = jobsOnDisplay.value.filter(
+            (job) => job.owner.includes(owner.value)
+        )
     }
     
     function filterByResource(resourceArg) {
-        activeFilters.push('resource')
-        resource.value = resourceArg
+        if (resourceArg !== null) {
+            resource.value = resourceArg
+        }
+        jobsOnDisplay.value = jobsOnDisplay.value.filter(
+            (job) => job.resource === resourceArg
+        )
     }
     
     function filterByStatus(statusArg) {
-        activeFilters.push('status')
         status.value = statusArg
+        jobsOnDisplay.value = jobsOnDisplay.value.filter(
+            (job) => job.status === status.value
+        )
     }
 </script>
 
@@ -84,26 +72,21 @@
     <div class="w-full relative px-8">
         <!-- filters -->
         <div class="">
-            <input @keyup.enter="activeFilters.push('name')"
+            <input @keyup.enter="filterByKeyword()"
                 v-model="keyword"
                 class="border-gray-300 border focus:outline-blue-500 p-1 mr-4"
                 placeholder="Filter by keyword"/>
-
-            <input @keyup.enter="activeFilters.push('id')" 
+            <input @keyup.enter="filterByJobId()" 
                 v-model="jobId"
                 class="border-gray-300 border focus:outline-blue-500 p-1 m-4" 
                 placeholder="Job ID"/>
-
             <Dropdown @choose-option="filterByJobType"
                 :options="jobTypes" name="Job Type" class="m-4 w-36" />
-
-            <input @keyup.enter="activeFilters.push('owner')" 
+            <input @keyup.enter="filterByOwner()" 
             class="border-gray-300 border focus:outline-blue-500 p-1 m-4" 
             placeholder="Owner"/>
-
             <Dropdown @choose-option="filterByResource"
                 :options="resourceTypes" name="Resource Type" class="m-4 w-40" />
-
             <Dropdown @choose-option="filterByStatus"
             :options="statusTypes" name="Status" class="m-4 w-36" />
         </div>
