@@ -1,6 +1,6 @@
 <template>
-    <div class="w-1/6 absolute bg-white h-full border-r border-gray shadow-inner">
-        <div class="font-bold h-16 border-b py-4 text-center border-gray overflow-hidden">
+    <div class="w-1/6 fixed bg-white h-full border-r border-gray shadow-inner">
+        <div class="font-bold h-18 border-b py-4 text-center border-gray overflow-hidden">
             Tokio Marine America
         </div>
         <div class="mt-6">
