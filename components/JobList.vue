@@ -25,6 +25,8 @@
     let status = ref(null)
     let activeFilters = ref([])
     let jobsOnDisplay = ref(jobs)
+    let sortDirection = ref(null)
+    let sortItem = ref(null)
 
     let pageOfJobs = computed(() => {
         return jobsOnDisplay.value.slice((pageNumber.value - 1) *  pageSize.value, ((pageNumber.value - 1) * pageSize.value) * pageSize.value + pageSize.value)
@@ -140,6 +142,145 @@
         activeFilters.value.push('status')
     }
 
+    function toggleSortDirection() {
+        console.log(sortDirection.value)
+        if (sortDirection.value === null) {
+            sortDirection.value = "asc"
+        }
+        else if (sortDirection.value === "asc") {
+            sortDirection.value = "desc"
+        }
+        else {
+            sortDirection.value = null
+            sortItem.value = null
+        }
+    }
+
+    function sortByName() {
+        sortItem.value = "name"
+        toggleSortDirection()
+        jobsOnDisplay.value.sort((a, b) => {
+            if (a.name.toLowerCase() < b.name.toLowerCase()) {
+                return -1
+            }
+            else if (a.name.toLowerCase() > b.name.toLowerCase()) {
+                return 1
+            }
+            else {
+                return 0
+            }
+        })
+    }
+    
+    function sortByJobId() {
+        sortItem.value = "id"
+        toggleSortDirection()
+        jobsOnDisplay.value.sort((a, b) => {
+            return (a.id - b.id)
+        })
+    }
+    
+    function sortByJobType() {
+        sortItem.value = "jobType"
+        toggleSortDirection()
+        jobsOnDisplay.value.sort((a, b) => {
+            if (a.type.toLowerCase() < b.type.toLowerCase()) {
+                return -1
+            }
+            else if (a.type.toLowerCase() > b.type.toLowerCase()) {
+                return 1
+            }
+            else {
+                return 0
+            }
+        })
+    }
+
+    function sortByOwner() {
+        sortItem.value = "owner"
+        toggleSortDirection()
+        jobsOnDisplay.value.sort((a, b) => {
+            if (a.owner.toLowerCase() < b.owner.toLowerCase()) {
+                return -1
+            }
+            else if (a.owner.toLowerCase() > b.owner.toLowerCase()) {
+                return 1
+            }
+            else {
+                return 0
+            }
+        })
+    }
+    
+    function sortByResourceType() {
+        sortItem.value = "resourceType"
+        toggleSortDirection()
+        jobsOnDisplay.value.sort((a, b) => {
+            if (sortDirection.value === "desc") {
+                if (a.resource.toLowerCase() < b.resource.toLowerCase()) {
+                    return -1
+                }
+                else if (a.resource.toLowerCase() > b.resource.toLowerCase()) {
+                    return 1
+                }
+            }
+            else if (sortDirection.value === "asc") {
+                if (a.resource.toLowerCase() > b.resource.toLowerCase()) {
+                    return -1
+                }
+                else if (a.resource.toLowerCase() < b.resource.toLowerCase()) {
+                    return 1
+                }
+            }
+            else {
+                return 0
+            }
+        })
+    }
+    
+    function sortByDateRange() {
+        sortItem.value = "dateRange"
+        toggleSortDirection()
+        jobsOnDisplay.value.sort((a, b) => {
+            if (sortDirection.value === "desc") {
+                if (a.dateRange.toLowerCase() < b.dateRange.toLowerCase()) {
+                    return -1
+                }
+                else if (a.dateRange.toLowerCase() > b.dateRange.toLowerCase()) {
+                    return 1
+                }
+            }
+            else if (sortDirection.value === "asc") {
+                if (a.dateRange.toLowerCase() > b.dateRange.toLowerCase()) {
+                    return -1
+                }
+                else if (a.dateRange.toLowerCase() < b.dateRange.toLowerCase()) {
+                    return 1
+                }
+            }
+            
+            else {
+                return 0
+            }
+        })
+    }
+    
+    function sortByStatus() {
+        sortItem.value = "status"
+        toggleSortDirection()
+        jobsOnDisplay.value.sort((a, b) => {
+            if (a.status.toLowerCase() < b.status.toLowerCase()) {
+                return -1
+            }
+            else if (a.status.toLowerCase() > b.status.toLowerCase()) {
+                return 1
+            }
+            else {
+                return 0
+            }
+        })
+    }
+
     function previousPage() {
         if (pageNumber.value !== 1) {
             pageNumber.value--
@@ -149,13 +290,11 @@
     function nextPage() {
         let pages = jobsOnDisplay.value.length / pageSize.value
         if (pages % 1 !== 0) {
-            console.log(pages)
             pages = (pages | 0) + 1
         }
         else {
             pages = pages | 0
         }
-        console.log(pages)
         if (pageNumber.value < pages) {
             pageNumber.value++
         }
@@ -191,28 +330,63 @@
             :options="statusTypes" name="Status" class="m-4 w-36" />
         </div>
 
-        <table class="w-full table-auto">
+        <table class="w-full table-fixed">
             <tr class="border-b-2 border-gray-300 text-left">
-                <th class="py-3">
+                <th @click="sortByName()" class="py-3">
                     Job name
+                    <i class="fa" :class="{
+                        'fa-chevron-up': sortDirection === 'asc',
+                        'fa-chevron-down': sortDirection === 'desc',
+                        'invisible': sortDirection === null || sortItem !== 'name'
+                    }"/>
                 </th>
-                <th class="py-3">
+                <th @click="sortByJobId()" class="py-3">
                     Job ID
+                    <i class="fa" :class="{
+                        'fa-chevron-up': sortDirection === 'asc',
+                        'fa-chevron-down': sortDirection === 'desc',
+                        'invisible': sortDirection === null || sortItem !== 'id'
+                    }"/>
                 </th>
-                <th class="py-3">
+                <th @click="sortByJobType()" class="py-3">
                     Job Type
+                    <i class="fa" :class="{
+                        'fa-chevron-up': sortDirection === 'asc',
+                        'fa-chevron-down': sortDirection === 'desc',
+                        'invisible': sortDirection === null || sortItem !== 'jobType'
+                    }"/>
                 </th>
-                <th class="py-3">
+                <th @click="sortByOwner()" class="py-3">
                     Owner
+                    <i class="fa" :class="{
+                        'fa-chevron-up': sortDirection === 'asc',
+                        'fa-chevron-down': sortDirection === 'desc',
+                        'invisible': sortDirection === null || sortItem !== 'owner'
+                    }"/>
                 </th>
-                <th class="py-3">
+                <th @click="sortByResourceType()" class="py-3">
                     Resource type
+                    <i class="fa" :class="{
+                        'fa-chevron-up': sortDirection === 'asc',
+                        'fa-chevron-down': sortDirection === 'desc',
+                        'invisible': sortDirection === null || sortItem !== 'resourceType'
+                    }"/>
                 </th>
-                <th class="py-3">
+                <th @click="sortByDateRange()" class="py-3">
                     Date range
+                    <i class="fa" :class="{
+                        'fa-chevron-up': sortDirection === 'asc',
+                        'fa-chevron-down': sortDirection === 'desc',
+                        'invisible': sortDirection === null || sortItem !== 'dateRange'
+                    }"/>
                 </th>
-                <th class="py-3">
+                <th @click="sortByStatus()" class="py-3">
                     Status
+                    <i class="fa" :class="{
+                        'fa-chevron-up': sortDirection === 'asc',
+                        'fa-chevron-down': sortDirection === 'desc',
+                        'invisible': sortDirection === null || sortItem !== 'status'
+                    }"/>
                 </th>    
             </tr>
             
