@@ -9,7 +9,7 @@
     <Navigation />
 
     <!-- inner top bar -->
-    <div class="fixed w-5/6 right-0 h-18">
+    <div class="fixed w-5/6 right-0 h-18 z-0">
         <div class="border-b w-full p-5 shadow-inner bg-slate-50 flex">
             <i class="fa-solid fa-arrow-left text-blue-700 mx-4" />
 
