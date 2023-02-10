@@ -1,18 +1,19 @@
 <script setup>
     const props = defineProps({
         name: String,
+        selectKey: String,
         options: Array
     })
 
-    const emits = defineEmits([
+    const emit = defineEmits([
         'choose-option'
     ])
 
     let chosenOption = ref(props.name)
     let opened = ref(false)
 
-    function chooseOption(option) {
-        emits('choose-option', option)
+    function chooseOption(key, option) {
+        emit('choose-option', key, option)
         opened.value = false
         chosenOption.value = option
     }
@@ -34,7 +35,7 @@
         </button>
 
         <div v-if="opened" class="absolute my-1 right-0 left-0 border border-gray-300 shadow-md z-50">
-            <div v-for="option in options" @click="chooseOption(option)" class="border-b border-gray-300 bg-white px-3 py-1 bg-white hover:bg-blue-50">
+            <div v-for="option in options" @click="chooseOption(selectKey, option)" class="border-b border-gray-300 bg-white px-3 py-1 bg-white hover:bg-blue-50">
                 {{ option }}
             </div>
         </div>
