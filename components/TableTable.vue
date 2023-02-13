@@ -5,6 +5,7 @@
         filters: Array,
         pageSize: Number
     })
+    
     let sortItem = ref(null)
     let sortDirection = ref(0)
     let pageNumber = ref(1)
@@ -87,20 +88,22 @@
 
 <template>
     <table class="table-fixed w-full">
-        <tr>
-            <th v-for="column in columns" class="text-left" @click="toggleSortDirection(column.key)">
-                {{ column.name }}
-                <i class="fa text-xs" :class="{
-                    'fa-chevron-up': sortDirection === 1,
-                    'fa-chevron-down': sortDirection === -1,
-                    'invisible': sortDirection === 0 || sortItem !== column.key
-                }"/>
-            </th>
-        </tr>
+        <thead>
+            <tr>
+                <th v-for="column in columns" class="text-left" @click="toggleSortDirection(column.key)">
+                    {{ column.name }}
+                    <i class="fa text-xs" :class="{
+                        'fa-chevron-up': sortDirection === 1,
+                        'fa-chevron-down': sortDirection === -1,
+                        'invisible': sortDirection === 0 || sortItem !== column.key
+                    }"/>
+                </th>
+            </tr>    
+        </thead>
 
         <tbody>
             <tr class="border-b border-gray-300 py-2" v-for="row in page">
-                <td v-for="td in row">
+                <td class="py-2" v-for="td in row">
                     {{ td }}
                 </td>
             </tr>

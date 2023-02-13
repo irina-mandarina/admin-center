@@ -21,15 +21,15 @@
 
 <template>
     <div class="relative inline-block">
-        <button @click="opened = !opened" class="inline px-3 w-full py-1 text-left border-box border border-gray-300" :class="{
+        <button @click="opened = !opened" class="inline px-3 w-full py-1 border-box border border-gray-300" :class="{
             'shadow-sm': opened,
             'border-blue-400': opened
         }">
-            {{ chosenOption }}
-            <i v-if="!opened" class="fa fa-chevron-down float-right p-1" :class="{
+            <span class="float-left">{{ chosenOption }}</span>
+            <i v-if="!opened" class="fa fa-chevron-down float-right text-sm" :class="{
             'text-blue-500': opened
             }"/>
-            <i v-if="opened" class="fa fa-chevron-up float-right p-1" :class="{
+            <i v-if="opened" class="fa fa-chevron-up float-right text-sm" :class="{
             'text-blue-500': opened
             }"/>
         </button>

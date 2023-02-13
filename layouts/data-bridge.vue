@@ -9,7 +9,7 @@
     <div class="flex">
         <Navigation class="w-1/6" />
         <div class="w-5/6">
-            <DataBridgeTopBar class="w-full" />
+            <DataBridgeTopBar :servers="servers" class="w-full" />
             <slot class="" />
         </div>
     </div>

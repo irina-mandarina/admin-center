@@ -24,32 +24,90 @@
     let keyword = ref(null)
     let jobId = ref(null)
     let owner = ref(null)
-    let activeFilters = ref([])
-    let sortDirection = ref(null)
+    let jobType = ref(null)
+    let dateRange = ref(null)
+    let resourceType = ref(null)
+    let statusType = ref(null)
     
-    let directionMult = computed (() => {
-        if (sortDirection.value === "desc") {
-            return -1
-        }
-        else return 1
+    const router = useRouter()
+    const route = useRoute()
+
+    onBeforeMount(() => {
+        console.log(route)
+        keyword.value = route.query.name
+        owner.value = route.query.owner
+        jobId.value = route.query.id
+        jobType.value = route.query.job
+        resourceType.value = route.query.resource
+        statusType.value = route.query.status
+        console.log(keyword)
     })
-    
-    function filterBy(key, value) {
-        let type
-        if (['name', 'id', 'owner', 'dateRange'].includes(key)) {
-            type = 'text'
-        }
-        else {
-            type = 'select'
-        }
-        activeFilters.value = activeFilters.value.filter( (it) => key !== it.key )
-        if (value !== null && value.length > 0) {
-            activeFilters.value.push({
-                key,
-                value,
-                type
+
+    let activeFilters = computed(() => {
+        let result = []
+        if (keyword.value?.length) {
+            result.push({
+                key: 'name',
+                value: keyword.value,
+                type: 'text'
             })
+            router.push({ query: {name: keyword.value }})
         }
+        if (owner.value?.length) {
+            result.push({
+                key: 'owner',
+                value: owner.value,
+                type: 'text'
+            })
+            router.push({ query: {owner: owner.value }})
+        }
+        if (jobId.value?.length) {
+            result.push({
+                key: 'id',
+                value: jobId.value,
+                type: 'text'
+            })
+            router.push({ query: {id: jobId.value }})
+        }
+        if (resourceType.value?.length) {
+            result.push({
+                key: 'resource',
+                value: resourceType.value,
+                type: 'select'
+            })
+            router.push({ query: {resource: resourceType.value }})
+        }
+        if (dateRange.value?.length) {
+            result.push({
+                key: 'dateRange',
+                value: dateRange.value,
+                type: 'text'
+            })
+            router.push({ query: {date: dateRange.value }})
+        }
+        if (statusType.value?.length) {
+            result.push({
+                key: 'status',
+                value: statusType.value,
+                type: 'select'
+            })
+            router.push({ query: {status: statusType.value }})
+        }
+        console.log(result)
+        return result
+
+    })
+
+    function setStatus(status) {
+        statusType.value = status
+    }
+
+    function setJobType(job) {
+        jobType.value = job
+    }
+
+    function setResource(resource) {
+        resourceType.value = resource
     }
 
 </script>
@@ -58,28 +116,28 @@
     <div class="w-full relative px-8">
         <!-- filters -->
         <div class="">
-            <input @keyup.enter="filterBy('name', keyword)"
+            <input 
                 v-model="keyword"
                 class="border-gray-300 border focus:outline-blue-500 p-1 mr-4"
                 placeholder="Filter by keyword"/>
 
-            <input @keyup.enter="filterBy('id', jobId)" 
+            <input 
                 v-model="jobId"
                 class="border-gray-300 border focus:outline-blue-500 p-1 m-4" 
                 placeholder="Job ID" />
 
-            <Dropdown @choose-option="filterBy"
+            <Dropdown @choose-option="setJobType"
                 :options="jobTypes" name="Job Type" select-key="type" class="m-4 w-36" />
 
-            <input @keyup.enter="filterBy('owner', owner)" 
+            <input 
             v-model="owner"
             class="border-gray-300 border focus:outline-blue-500 p-1 m-4" 
             placeholder="Owner"/>
 
-            <Dropdown @choose-option="filterBy"
+            <Dropdown @choose-option="setResource"
                 :options="resourceTypes" name="Resource Type" select-key="resourceType" class="m-4 w-40" />
 
-            <Dropdown @choose-option="filterBy"
+            <Dropdown @choose-option="setStatus"
             :options="statusTypes" name="Status" select-key="status" class="m-4 w-36" />
         </div>
 
