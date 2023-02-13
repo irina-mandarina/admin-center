@@ -3,21 +3,21 @@
     let resourceTypes = ["Database", "Profile", "Report", "Exposure set"]
     let statusTypes = ["Success", "Failed", "In progress", "Cancelled"]
     let jobs = [
-        {"name": "DB1.mdf", "id": "42gret4w", "type": "Shrink", "owner": "John Smith", "resourceType": "Report", "dateRange": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
-        {"name": "DB2.mdf", "id": "rfsfvs424", "type": "Alter", "owner": "John SmithSmith", "resourceType": "Profile", "dateRange": '1/30/2023 - 1/30/2023', "status": "Success"},
-        {"name": "DB3.mdf", "id": "42rfet4", "type": "Import", "owner": "John SmithSmith", "resourceType": "Database", "dateRange": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
-        {"name": "DB4.mdf", "id": "4565uytD", "type": "Upload", "owner": "John SmithSmith", "resourceType": "Database", "dateRange": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
-        {"name": "DB5.mdf", "id": "4ty980p", "type": "Import", "owner": "John SmithSmith", "resourceType": "Database", "dateRange": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
-        {"name": "DB6.mdf", "id": "1kiy78ytk345", "type": "Delete", "owner": "John Smith", "resourceType": "Exposure set", "dateRange": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
-        {"name": "DB7.mdf", "id": "86ijt", "type": "Delete", "owner": "John Smith", "resourceType": "Exposure set", "dateRange": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
+        {"name": "DB1.mdf", "id": "42gret4w", "type": "Shrink", "owner": "John Smith", "resource": "Report", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
+        {"name": "DB2.mdf", "id": "rfsfvs424", "type": "Alter", "owner": "John SmithSmith", "resource": "Profile", "date": '1/30/2023 - 1/30/2023', "status": "Success"},
+        {"name": "DB3.mdf", "id": "42rfet4", "type": "Import", "owner": "John SmithSmith", "resource": "Database", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
+        {"name": "DB4.mdf", "id": "4565uytD", "type": "Upload", "owner": "John SmithSmith", "resource": "Database", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
+        {"name": "DB5.mdf", "id": "4ty980p", "type": "Import", "owner": "John SmithSmith", "resource": "Database", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
+        {"name": "DB6.mdf", "id": "1kiy78ytk345", "type": "Delete", "owner": "John Smith", "resource": "Exposure set", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
+        {"name": "DB7.mdf", "id": "86ijt", "type": "Delete", "owner": "John Smith", "resource": "Exposure set", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
     ]
     let columns = [
         { key: 'name', name:'Job name'},
         { key: 'id', name: 'Job ID'},
         { key: 'type', name: 'Job Type'},
         { key: 'owner', name: 'Owner'},
-        { key: 'type', name: 'Resource Type'},
-        { key: 'dateRange', name: 'Date Range'},
+        { key: 'resource', name: 'Resource Type'},
+        { key: 'date', name: 'Date Range'},
         { key: 'status', name: 'Status'}]
     let pageSize = ref(5)
 
@@ -33,14 +33,12 @@
     const route = useRoute()
 
     onBeforeMount(() => {
-        console.log(route)
         keyword.value = route.query.name
         owner.value = route.query.owner
         jobId.value = route.query.id
         jobType.value = route.query.job
         resourceType.value = route.query.resource
         statusType.value = route.query.status
-        console.log(keyword)
     })
 
     let activeFilters = computed(() => {
@@ -69,6 +67,14 @@
             })
             router.push({ query: {id: jobId.value }})
         }
+        if (jobType.value?.length) {
+            result.push({
+                key: 'type',
+                value: jobType.value,
+                type: 'select'
+            })
+            router.push({ query: {id: jobId.value }})
+        }
         if (resourceType.value?.length) {
             result.push({
                 key: 'resource',
@@ -79,7 +85,7 @@
         }
         if (dateRange.value?.length) {
             result.push({
-                key: 'dateRange',
+                key: 'date',
                 value: dateRange.value,
                 type: 'text'
             })
@@ -93,7 +99,6 @@
             })
             router.push({ query: {status: statusType.value }})
         }
-        console.log(result)
         return result
 
     })
@@ -107,6 +112,7 @@
     }
 
     function setResource(resource) {
+        console.log(resource)
         resourceType.value = resource
     }
 

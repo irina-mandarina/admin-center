@@ -13,7 +13,7 @@
     let opened = ref(false)
 
     function chooseOption(key, option) {
-        emit('choose-option', key, option)
+        emit('choose-option', option)
         opened.value = false
         chosenOption.value = option
     }

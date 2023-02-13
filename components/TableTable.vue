@@ -12,9 +12,12 @@
     let displayedData = computed (() => {
         let result = props.data
         for (let filterIndex = 0; filterIndex < props.filters?.length; filterIndex++) {
+            console.log(props.filters)
             let filter = props.filters[filterIndex]
             if (filter.type === 'select') {
-                result = result.filter((it) => it[filter.key] === filter.value)
+                result = result.filter((it) => {
+                    console.log(it)
+                    return it[filter.key] === filter.value})
             }
             else if (filter.type === 'text') {
                 result = result.filter((it) => it[filter.key].toLowerCase().includes(filter.value.toLowerCase()))
@@ -23,11 +26,11 @@
 
         let preSort = [...result]
         if (sortDirection.value !== 0) {
-            return preSort.sort((a, b) => {
-                if (a[sortItem.value].toLowerCase() < b[sortItem.value].toLowerCase()) {
+            return preSort.sort((left, right) => {
+                if (left[sortItem.value].toLowerCase() < right[sortItem.value].toLowerCase()) {
                     return -1 * sortDirection.value
                 }
-                else if (a[sortItem.value].toLowerCase() > b[sortItem.value].toLowerCase()) {
+                else if (left[sortItem.value].toLowerCase() > right[sortItem.value].toLowerCase()) {
                     return 1 * sortDirection.value
                 }
                 else return 0
@@ -39,13 +42,6 @@
 
     let page = computed(() => {
         return displayedData.value.slice((pageNumber.value - 1) *  props.pageSize, ((pageNumber.value - 1) * props.pageSize) * props.pageSize + props.pageSize)
-    })
-
-    let directionMult = computed (() => {
-        if (sortDirection.value === "desc") {
-            return -1
-        }
-        else return 1
     })
 
     function previousPage() {
