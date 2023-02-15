@@ -21,21 +21,30 @@
         { key: 'status', name: 'Status'}]
     let pageSize = ref(5)
 
-    let keyword = ref(null)
-    let jobId = ref(null)
-    let owner = ref(null)
+    let keywordInput = ref(null)
+    let jobIdInput = ref(null)
+    let ownerInput = ref(null)
     let jobType = ref(null)
     let dateRange = ref(null)
     let resourceType = ref(null)
     let statusType = ref(null)
     
+    let keyword
+    watch ((keywordInput) => {
+        setTimeout( () => {
+            keyword = keywordInput.value
+        }, 1000)
+    })
+    // let owner = ref(null)
+    // let jobId = ref(null)
+    
     const router = useRouter()
     const route = useRoute()
 
     onBeforeMount(() => {
-        keyword.value = route.query.name
-        owner.value = route.query.owner
-        jobId.value = route.query.id
+        keywordInput.value = route.query.name
+        ownerInput.value = route.query.owner
+        jobIdInput.value = route.query.id
         jobType.value = route.query.job
         resourceType.value = route.query.resource
         statusType.value = route.query.status
@@ -44,32 +53,29 @@
     let activeFilters = computed(() => {
         let result = []
         let query = {}
-        if (keyword.value?.length) {
+        if (keyword?.length) {
             result.push({
                 key: 'name',
-                value: keyword.value,
+                value: keyword,
                 type: 'text'
             })
-            query.name = keyword.value
-            // router.push({ query: {name: keyword.value }})
+            query.name = keyword
         }
-        if (owner.value?.length) {
+        if (ownerInput.value?.length) {
             result.push({
                 key: 'owner',
-                value: owner.value,
+                value: ownerInput.value,
                 type: 'text'
             })
-            query.owner = owner.value
-            // router.push({ query: {owner: owner.value }})
+            query.owner = ownerInput.value
         }
-        if (jobId.value?.length) {
+        if (jobIdInput.value?.length) {
             result.push({
                 key: 'id',
-                value: jobId.value,
+                value: jobIdInput.value,
                 type: 'text'
             })
-            query.id = jobId.value
-            // router.push({ query: {id: jobId.value }})
+            query.id = jobIdInput.value
         }
         if (jobType.value?.length) {
             result.push({
@@ -78,7 +84,6 @@
                 type: 'select'
             })
             query.type = jobType.value
-            // router.push({ query: {id: jobId.value }})
         }
         if (resourceType.value?.length) {
             result.push({
@@ -87,7 +92,6 @@
                 type: 'select'
             })
             query.resource = resourceType.value
-            // router.push({ query: {resource: resourceType.value }})
         }
         if (dateRange.value?.length) {
             result.push({
@@ -96,7 +100,6 @@
                 type: 'text'
             })
             query.date = dateRange.value
-            // router.push({ query: {date: dateRange.value }})
         }
         if (statusType.value?.length) {
             result.push({
@@ -105,11 +108,10 @@
                 type: 'select'
             })
             query.status = statusType.value
-            // router.push({ query: {status: statusType.value }})
         }
         router.push({query})
+        // await setTimeout(() => {router.push({query})}, 1000)
         return result
-
     })
 
     function setStatus(status) {
@@ -132,12 +134,12 @@
         <!-- filters -->
         <div class="">
             <input 
-                v-model="keyword"
+                v-model="keywordInput"
                 class="border-gray-300 border focus:outline-blue-500 p-1 mr-4"
                 placeholder="Filter by keyword"/>
 
             <input 
-                v-model="jobId"
+                v-model="jobIdInput"
                 class="border-gray-300 border focus:outline-blue-500 p-1 m-4" 
                 placeholder="Job ID" />
 
@@ -145,7 +147,7 @@
                 :options="jobTypes" name="Job Type" select-key="type" class="m-4 w-36" />
 
             <input 
-            v-model="owner"
+            v-model="ownerInput"
             class="border-gray-300 border focus:outline-blue-500 p-1 m-4" 
             placeholder="Owner"/>
 

@@ -5,7 +5,8 @@
 </script>
 
 <template>
-    <td class="py-2 rounded-full w-min whitespace-nowrap" :class="{
+    <td class="py-2">
+        <span class="p-1 rounded-full whitespace-nowrap" :class="{
         'text-green-900': data === 'Success',
         'bg-green-50': data === 'Success',
 
@@ -17,7 +18,8 @@
 
         'text-red-900': data === 'Error',
         'bg-red-50': data === 'Error'
-    }">
-        {{ data }}
+        }">
+           {{ data }} 
+        </span>
     </td>
 </template>
