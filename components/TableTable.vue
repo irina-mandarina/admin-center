@@ -12,11 +12,9 @@
     let displayedData = computed (() => {
         let result = props.data
         for (let filterIndex = 0; filterIndex < props.filters?.length; filterIndex++) {
-            console.log(props.filters)
             let filter = props.filters[filterIndex]
             if (filter.type === 'select') {
                 result = result.filter((it) => {
-                    console.log(it)
                     return it[filter.key] === filter.value})
             }
             else if (filter.type === 'text') {
@@ -99,9 +97,7 @@
 
         <tbody>
             <tr class="border-b border-gray-300 py-2" v-for="row in page">
-                <td class="py-2" v-for="td in row">
-                    {{ td }}
-                </td>
+                <TableCell v-for="td in row" :data="td" />
             </tr>
         </tbody>
 

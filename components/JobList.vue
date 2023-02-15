@@ -6,8 +6,8 @@
         {"name": "DB1.mdf", "id": "42gret4w", "type": "Shrink", "owner": "John Smith", "resource": "Report", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
         {"name": "DB2.mdf", "id": "rfsfvs424", "type": "Alter", "owner": "John SmithSmith", "resource": "Profile", "date": '1/30/2023 - 1/30/2023', "status": "Success"},
         {"name": "DB3.mdf", "id": "42rfet4", "type": "Import", "owner": "John SmithSmith", "resource": "Database", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
-        {"name": "DB4.mdf", "id": "4565uytD", "type": "Upload", "owner": "John SmithSmith", "resource": "Database", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
-        {"name": "DB5.mdf", "id": "4ty980p", "type": "Import", "owner": "John SmithSmith", "resource": "Database", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
+        {"name": "DB4.mdf", "id": "4565uytD", "type": "Upload", "owner": "John SmithSmith", "resource": "Database", "date": '1/30/2023 - 1/30/2023', "status": "Failed"},
+        {"name": "DB5.mdf", "id": "4ty980p", "type": "Import", "owner": "John SmithSmith", "resource": "Database", "date": '1/30/2023 - 1/30/2023', "status": "In progress"},
         {"name": "DB6.mdf", "id": "1kiy78ytk345", "type": "Delete", "owner": "John Smith", "resource": "Exposure set", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
         {"name": "DB7.mdf", "id": "86ijt", "type": "Delete", "owner": "John Smith", "resource": "Exposure set", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
     ]
@@ -43,13 +43,15 @@
 
     let activeFilters = computed(() => {
         let result = []
+        let query = {}
         if (keyword.value?.length) {
             result.push({
                 key: 'name',
                 value: keyword.value,
                 type: 'text'
             })
-            router.push({ query: {name: keyword.value }})
+            query.name = keyword.value
+            // router.push({ query: {name: keyword.value }})
         }
         if (owner.value?.length) {
             result.push({
@@ -57,7 +59,8 @@
                 value: owner.value,
                 type: 'text'
             })
-            router.push({ query: {owner: owner.value }})
+            query.owner = owner.value
+            // router.push({ query: {owner: owner.value }})
         }
         if (jobId.value?.length) {
             result.push({
@@ -65,7 +68,8 @@
                 value: jobId.value,
                 type: 'text'
             })
-            router.push({ query: {id: jobId.value }})
+            query.id = jobId.value
+            // router.push({ query: {id: jobId.value }})
         }
         if (jobType.value?.length) {
             result.push({
@@ -73,7 +77,8 @@
                 value: jobType.value,
                 type: 'select'
             })
-            router.push({ query: {id: jobId.value }})
+            query.type = jobType.value
+            // router.push({ query: {id: jobId.value }})
         }
         if (resourceType.value?.length) {
             result.push({
@@ -81,7 +86,8 @@
                 value: resourceType.value,
                 type: 'select'
             })
-            router.push({ query: {resource: resourceType.value }})
+            query.resource = resourceType.value
+            // router.push({ query: {resource: resourceType.value }})
         }
         if (dateRange.value?.length) {
             result.push({
@@ -89,7 +95,8 @@
                 value: dateRange.value,
                 type: 'text'
             })
-            router.push({ query: {date: dateRange.value }})
+            query.date = dateRange.value
+            // router.push({ query: {date: dateRange.value }})
         }
         if (statusType.value?.length) {
             result.push({
@@ -97,8 +104,10 @@
                 value: statusType.value,
                 type: 'select'
             })
-            router.push({ query: {status: statusType.value }})
+            query.status = statusType.value
+            // router.push({ query: {status: statusType.value }})
         }
+        router.push({query})
         return result
 
     })

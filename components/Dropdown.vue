@@ -11,6 +11,7 @@
 
     let chosenOption = ref(props.name)
     let opened = ref(false)
+    let closable = ref(true)
 
     function chooseOption(key, option) {
         emit('choose-option', option)
@@ -20,8 +21,8 @@
 </script>
 
 <template>
-    <div class="relative inline-block">
-        <button @click="opened = !opened" class="inline px-3 w-full py-1 border-box border border-gray-300" :class="{
+    <div @focusin="opened = !opened" @focusout="opened = !closable" @mouseover="closable = false" @mouseleave="closable = true" class="relative inline-block">
+        <button class="inline px-3 w-full py-1 border-box border border-gray-300" :class="{
             'shadow-sm': opened,
             'border-blue-400': opened
         }">
@@ -35,7 +36,7 @@
         </button>
 
         <div v-if="opened" class="absolute my-1 right-0 left-0 border border-gray-300 shadow-md z-50">
-            <div v-for="option in options" @click="chooseOption(selectKey, option)" class="border-b border-gray-300 bg-white px-3 py-1 bg-white hover:bg-blue-50">
+            <div v-for="option in options" @click="chooseOption(selectKey, option)" class="border-b border-gray-200 bg-white px-3 py-1 bg-white hover:bg-blue-50">
                 {{ option }}
             </div>
         </div>
