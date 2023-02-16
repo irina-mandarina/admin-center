@@ -1,4 +1,7 @@
 <script setup>
+    import  _debounce  from 'lodash/debounce'
+    import _pickBy from 'lodash/pickBy'
+
     let jobTypes = ["Upload", "Import", "Export", "Delete", "Shrink", "Alter"]
     let resourceTypes = ["Database", "Profile", "Report", "Exposure set"]
     let statusTypes = ["Success", "Failed", "In progress", "Cancelled"]
@@ -21,20 +24,20 @@
         { key: 'status', name: 'Status'}]
     let pageSize = ref(5)
 
-    let keywordInput = ref(null)
-    let jobIdInput = ref(null)
-    let ownerInput = ref(null)
+    let keyword = ref(null)
+    let jobId = ref(null)
+    let owner = ref(null)
     let jobType = ref(null)
     let dateRange = ref(null)
     let resourceType = ref(null)
     let statusType = ref(null)
     
-    let keyword
-    watch ((keywordInput) => {
-        setTimeout( () => {
-            keyword = keywordInput.value
-        }, 1000)
-    })
+    // let keyword
+    // watch ((keywordInput) => {
+    //     setTimeout( () => {
+    //         keyword = keywordInput.value
+    //     }, 1000)
+    // })
     // let owner = ref(null)
     // let jobId = ref(null)
     
@@ -42,40 +45,40 @@
     const route = useRoute()
 
     onBeforeMount(() => {
-        keywordInput.value = route.query.name
-        ownerInput.value = route.query.owner
-        jobIdInput.value = route.query.id
+        keyword.value = route.query.name
+        owner.value = route.query.owner
+        jobId.value = route.query.id
         jobType.value = route.query.job
         resourceType.value = route.query.resource
         statusType.value = route.query.status
     })
 
-    let activeFilters = computed(() => {
+    let activeFilters = computed( /*debounce(*/() => {
         let result = []
         let query = {}
-        if (keyword?.length) {
+        if (keyword.value?.length) {
             result.push({
                 key: 'name',
-                value: keyword,
+                value: keyword.value,
                 type: 'text'
             })
-            query.name = keyword
+            query.name = keyword.value
         }
-        if (ownerInput.value?.length) {
+        if (owner.value?.length) {
             result.push({
                 key: 'owner',
-                value: ownerInput.value,
+                value: owner.value,
                 type: 'text'
             })
-            query.owner = ownerInput.value
+            query.owner = owner.value
         }
-        if (jobIdInput.value?.length) {
+        if (jobId.value?.length) {
             result.push({
                 key: 'id',
-                value: jobIdInput.value,
+                value: jobId.value,
                 type: 'text'
             })
-            query.id = jobIdInput.value
+            query.id = jobId.value
         }
         if (jobType.value?.length) {
             result.push({
@@ -110,9 +113,8 @@
             query.status = statusType.value
         }
         router.push({query})
-        // await setTimeout(() => {router.push({query})}, 1000)
         return result
-    })
+    })//, 1000)
 
     function setStatus(status) {
         statusType.value = status
@@ -134,12 +136,12 @@
         <!-- filters -->
         <div class="">
             <input 
-                v-model="keywordInput"
+                v-model="keyword"
                 class="border-gray-300 border focus:outline-blue-500 p-1 mr-4"
                 placeholder="Filter by keyword"/>
 
             <input 
-                v-model="jobIdInput"
+                v-model="jobId"
                 class="border-gray-300 border focus:outline-blue-500 p-1 m-4" 
                 placeholder="Job ID" />
 
@@ -147,7 +149,7 @@
                 :options="jobTypes" name="Job Type" select-key="type" class="m-4 w-36" />
 
             <input 
-            v-model="ownerInput"
+            v-model="owner"
             class="border-gray-300 border focus:outline-blue-500 p-1 m-4" 
             placeholder="Owner"/>
 

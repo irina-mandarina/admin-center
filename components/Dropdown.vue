@@ -13,8 +13,10 @@
     let opened = ref(false)
     let closable = ref(true)
 
+
     function chooseOption(key, option) {
         emit('choose-option', option)
+
         opened.value = false
         chosenOption.value = option
     }
