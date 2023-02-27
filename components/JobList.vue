@@ -1,19 +1,43 @@
-<script setup>
-    import  _debounce  from 'lodash/debounce'
-    import _pickBy from 'lodash/pickBy'
+<script setup lang="ts">
+    const _debounce  = require('lodash/debounce')
+    const _pickBy = require('lodash/pickBy')
+    const JobStore = require('~~/stores/JobStore')
+    const JobType = require('~~/objects/jobType')
+    const ResourceType = require('~~/objects/resourceType')
+    const StatusType = require('~~/objects/statusType')
 
-    let jobTypes = ["Upload", "Import", "Export", "Delete", "Shrink", "Alter"]
-    let resourceTypes = ["Database", "Profile", "Report", "Exposure set"]
-    let statusTypes = ["Success", "Failed", "In progress", "Cancelled"]
-    let jobs = [
-        {"name": "DB1.mdf", "id": "42gret4w", "type": "Shrink", "owner": "John Smith", "resource": "Report", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
-        {"name": "DB2.mdf", "id": "rfsfvs424", "type": "Alter", "owner": "John SmithSmith", "resource": "Profile", "date": '1/30/2023 - 1/30/2023', "status": "Success"},
-        {"name": "DB3.mdf", "id": "42rfet4", "type": "Import", "owner": "John SmithSmith", "resource": "Database", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
-        {"name": "DB4.mdf", "id": "4565uytD", "type": "Upload", "owner": "John SmithSmith", "resource": "Database", "date": '1/30/2023 - 1/30/2023', "status": "Failed"},
-        {"name": "DB5.mdf", "id": "4ty980p", "type": "Import", "owner": "John SmithSmith", "resource": "Database", "date": '1/30/2023 - 1/30/2023', "status": "In progress"},
-        {"name": "DB6.mdf", "id": "1kiy78ytk345", "type": "Delete", "owner": "John Smith", "resource": "Exposure set", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
-        {"name": "DB7.mdf", "id": "86ijt", "type": "Delete", "owner": "John Smith", "resource": "Exposure set", "date": '1/30/2023 - 1/30/2023', "status": "Cancelled"},
-    ]
+    interface Column {
+        key: string;
+        name: string;
+    }
+
+    interface Filter {
+        name: string;
+        id: string;
+        owner: string;
+        type: string;
+        date: string;
+        resource: string;
+        status: string;
+        [key: string]: string | undefined;
+    }
+
+    interface ActiveFilter {
+        key: string;
+        value: string;
+        type: string;
+    }
+
+    interface RightSideDetails {
+        text: string;
+        database: string;
+        type: string;
+    }
+
+    const jobStore = JobStore()
+    
+
+    let jobs = computed(() => jobStore.jobs)
     let columns = [
         { key: 'name', name:'Job name'},
         { key: 'id', name: 'Job ID'},
@@ -22,145 +46,137 @@
         { key: 'resource', name: 'Resource Type'},
         { key: 'date', name: 'Date Range'},
         { key: 'status', name: 'Status'}]
+
     let pageSize = ref(5)
 
-    let keyword = ref(null)
-    let jobId = ref(null)
-    let owner = ref(null)
-    let jobType = ref(null)
-    let dateRange = ref(null)
-    let resourceType = ref(null)
-    let statusType = ref(null)
-    
-    // let keyword
-    // watch ((keywordInput) => {
-    //     setTimeout( () => {
-    //         keyword = keywordInput.value
-    //     }, 1000)
-    // })
-    // let owner = ref(null)
-    // let jobId = ref(null)
+    let filters: Filter =  reactive({
+        name: '',
+        id: '',
+        owner: '',
+        type: '',
+        date: '',
+        resource: '',
+        status: '',
+    })
+
+    let activeFilters = ref<ActiveFilter[] | null>(null)
     
     const router = useRouter()
     const route = useRoute()
+    let ok = ref<boolean>(false)
+
+    let rightSideInfo = ref<Map<string, string> | null>(null)
+    let rightSideTitle = ref<string | null>(null)
+    let focusedJob = ref<Job | null>(null)
+    let rightSideDetails = ref<RightSideDetails | null>(null)
 
     onBeforeMount(() => {
-        keyword.value = route.query.name
-        owner.value = route.query.owner
-        jobId.value = route.query.id
-        jobType.value = route.query.job
-        resourceType.value = route.query.resource
-        statusType.value = route.query.status
+        filters.name = route.query.name?
+        filters.owner = route.query.owner?
+        filters.id = route.query.id?
+        filters.type = route.query.type?
+        filters.resource = route.query.resource?
+        filters.status = route.query.status?
+
+        fillActiveFilters()
+        ok.value = true
     })
 
-    let activeFilters = computed( /*debounce(*/() => {
-        let result = []
-        let query = {}
-        if (keyword.value?.length) {
-            result.push({
-                key: 'name',
-                value: keyword.value,
-                type: 'text'
+   
+    watch(filters, _debounce(() => {
+        fillActiveFilters()
+    }, 500))
+
+    function fillActiveFilters(): void {
+        let query: Map<string, string> = new Map<string, string>()
+        activeFilters.value = []
+        for (let filter: string in _pickBy(filters)) {
+            query.set(filter, filters[filter]!)
+            let type: string
+            if (['type', 'resource', 'status'].includes(filter)) type = 'dropdown'
+            else type = 'text'
+            activeFilters.value.push({
+                key: filter,
+                value: filters[filter]!,
+                type
             })
-            query.name = keyword.value
-        }
-        if (owner.value?.length) {
-            result.push({
-                key: 'owner',
-                value: owner.value,
-                type: 'text'
-            })
-            query.owner = owner.value
-        }
-        if (jobId.value?.length) {
-            result.push({
-                key: 'id',
-                value: jobId.value,
-                type: 'text'
-            })
-            query.id = jobId.value
-        }
-        if (jobType.value?.length) {
-            result.push({
-                key: 'type',
-                value: jobType.value,
-                type: 'select'
-            })
-            query.type = jobType.value
-        }
-        if (resourceType.value?.length) {
-            result.push({
-                key: 'resource',
-                value: resourceType.value,
-                type: 'select'
-            })
-            query.resource = resourceType.value
-        }
-        if (dateRange.value?.length) {
-            result.push({
-                key: 'date',
-                value: dateRange.value,
-                type: 'text'
-            })
-            query.date = dateRange.value
-        }
-        if (statusType.value?.length) {
-            result.push({
-                key: 'status',
-                value: statusType.value,
-                type: 'select'
-            })
-            query.status = statusType.value
         }
         router.push({query})
-        return result
-    })//, 1000)
-
-    function setStatus(status) {
-        statusType.value = status
     }
 
-    function setJobType(job) {
-        jobType.value = job
+    function setStatus(status: string): void {
+        filters.status = status
     }
 
-    function setResource(resource) {
-        console.log(resource)
-        resourceType.value = resource
+    function setJobType(job: string): void {
+        filters.type = job
+    }
+
+    function setResource(resource: string): void {
+        filters.resource = resource
+    }
+
+    function showJobDetails(job: Job) {
+        clearJobDetails()
+        rightSideTitle.value = "Job ID: " + job.id
+        rightSideInfo.value = new Map()
+        for (let jobDetail in job) {
+            rightSideInfo.value.set(columns.filter((col) => col.key === jobDetail)[0].name, job[jobDetail]!)
+        }
+        focusedJob.value = job
+        console.log(focusedJob.value)
+        if (job.type === JobType.Export) {
+            rightSideDetails.value = {
+                text: "Download database",
+                database: "mydb",
+                type: "download"
+            }
+        }
+    }
+
+    function clearJobDetails(): void {
+        rightSideInfo.value = null
+        rightSideTitle.value = null
+        focusedJob.value = null
+        rightSideDetails.value = null
     }
 
 </script>
 
 <template>
-    <div class="w-full relative px-8">
+    <div class="w-full px-8">
         <!-- filters -->
-        <div class="">
+        <div class="flex justify-between mb-4">
             <input 
-                v-model="keyword"
-                class="border-gray-300 border focus:outline-blue-500 p-1 mr-4"
-                placeholder="Filter by keyword"/>
+                v-model="filters.name"
+                class="border-gray-300 border focus:border-blue-500 focus:outline-none p-1 border-box"
+                placeholder="Filter by keyword"
+                type="search" />
 
             <input 
-                v-model="jobId"
-                class="border-gray-300 border focus:outline-blue-500 p-1 m-4" 
-                placeholder="Job ID" />
+                v-model="filters.id"
+                class="border-gray-300 border focus:border-blue-500 focus:outline-none p-1 border-box" 
+                placeholder="Job ID"
+                type="search" />
 
             <Dropdown @choose-option="setJobType"
-                :options="jobTypes" name="Job Type" select-key="type" class="m-4 w-36" />
+                :options="Object.values(JobType)" name="Job Type" :displayOption="filters.type" select-key="type" class=" w-36" />
 
             <input 
-            v-model="owner"
-            class="border-gray-300 border focus:outline-blue-500 p-1 m-4" 
+            v-model="filters.owner"
+            class="border-gray-300 border focus:border-blue-500 focus:outline-none p-1 border-box" 
             placeholder="Owner"/>
 
             <Dropdown @choose-option="setResource"
-                :options="resourceTypes" name="Resource Type" select-key="resourceType" class="m-4 w-40" />
+                :options="Object.values(ResourceType)" name="Resource Type" :displayOption="filters.resource" select-key="resourceType" class="w-40" />
 
             <Dropdown @choose-option="setStatus"
-            :options="statusTypes" name="Status" select-key="status" class="m-4 w-36" />
+            :options="Object.values(StatusType)" name="Status" :displayOption="filters.status" select-key="status" class="w-36" />
         </div>
 
-        <TableTable :columns="columns" :data="jobs"  :filters="activeFilters" :page-size="pageSize" />
+        <TableTable v-if="ok" :columns="columns" :data="jobs" :filters="activeFilters" :page-size="pageSize" :focused-row="focusedJob" @show-row-details="showJobDetails" />
 
     </div>
+    
+    <RightSideBar v-if="rightSideTitle !== null" :title="rightSideTitle" :info-map="rightSideInfo" :details="rightSideDetails" @close-bar="clearJobDetails" />
 </template>

@@ -3,8 +3,11 @@
         columns: Array,
         data: Object,
         filters: Array,
-        pageSize: Number
+        pageSize: Number,
+        focusedRow: Object
     })
+
+    const emits = defineEmits(['show-row-details'])
     
     let sortItem = ref(null)
     let sortDirection = ref(0)
@@ -13,7 +16,7 @@
         let result = props.data
         for (let filterIndex = 0; filterIndex < props.filters?.length; filterIndex++) {
             let filter = props.filters[filterIndex]
-            if (filter.type === 'select') {
+            if (filter.type === 'dropdown') {
                 result = result.filter((it) => {
                     return it[filter.key] === filter.value})
             }
@@ -78,6 +81,23 @@
             sortDirection.value = 0
         }
     }
+
+    function objectsEqual(obj1, obj2) {
+        if (obj1 === null || obj2 === null && !(obj1 && obj2)) {
+            return false
+        }
+        for (let i in obj1) {
+            try {
+               if (obj1[i] !== obj2[i]) {
+                    return false
+                } 
+            } catch (e) {
+                return false
+            }
+            
+        }
+        return true
+    }
 </script>
 
 <template>
@@ -96,7 +116,10 @@
         </thead>
 
         <tbody>
-            <tr class="border-b border-gray-300 py-2" v-for="row in page">
+            <tr v-for="row in page" @click="$emit('show-row-details', row)" class="border-b border-gray-300 py-2"
+            :class="{
+                'bg-slate-100': objectsEqual(focusedRow, row)
+            }">
                 <TableCell v-for="td in row" :data="td" />
             </tr>
         </tbody>

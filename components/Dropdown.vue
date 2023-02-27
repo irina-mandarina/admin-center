@@ -1,20 +1,25 @@
-<script setup>
+<script lang="ts" setup>
     const props = defineProps({
         name: String,
         selectKey: String,
-        options: Array
+        options: Array,
+        displayOption:  String
     })
 
     const emit = defineEmits([
         'choose-option'
     ])
 
-    let chosenOption = ref(props.name)
+    let chosenOption = ref(null)
+    watch(props.displayOption , () => {
+        if (props.displayOption) chosenOption.value = props.displayOption
+        else chosenOption.value = props.name
+    })
     let opened = ref(false)
     let closable = ref(true)
 
 
-    function chooseOption(key, option) {
+    function chooseOption(key: String, option: String) {
         emit('choose-option', option)
 
         opened.value = false
@@ -23,12 +28,18 @@
 </script>
 
 <template>
-    <div @focusin="opened = !opened" @focusout="opened = !closable" @mouseover="closable = false" @mouseleave="closable = true" class="relative inline-block">
-        <button class="inline px-3 w-full py-1 border-box border border-gray-300" :class="{
+    <div @focusin="opened = !opened" 
+    @focusout="opened = !closable" 
+    @mouseover="closable = false" 
+    @mouseleave="closable = true" 
+    class="relative inline-block border-box border border-gray-300">
+
+        <button class="inline px-3 py-1 w-full " :class="{
             'shadow-sm': opened,
             'border-blue-400': opened
         }">
             <span class="float-left">{{ chosenOption }}</span>
+
             <i v-if="!opened" class="fa fa-chevron-down float-right text-sm" :class="{
             'text-blue-500': opened
             }"/>

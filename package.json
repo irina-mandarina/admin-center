@@ -8,6 +8,7 @@
     "postinstall": "nuxt prepare"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.191",
     "autoprefixer": "^10.4.13",
     "nuxt": "^3.1.0",
     "postcss": "^8.4.21",
@@ -16,6 +17,11 @@
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.2.1",
     "@fortawesome/vue-fontawesome": "^3.0.3",
-    "lodash": "^4.17.21"
+    "@pinia/nuxt": "^0.4.7",
+    "lodash": "^4.17.21",
+    "pinia": "^2.0.32"
+  },
+  "overrides": {
+    "vue": "latest"
   }
 }

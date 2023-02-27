@@ -1,5 +1,5 @@
 <template>
-    <div class="bg-white w-1/6 border-r border-gray shadow-inner">
+    <div class="bg-white w-1/6 border-r border-gray shadow-inner h-full">
         <div class="font-bold h-20 border-b py-4 text-center border-gray overflow-hidden">
             Tokio Marine America
         </div>
