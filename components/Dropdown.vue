@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
     const props = defineProps({
         name: String,
         selectKey: String,
@@ -10,16 +10,17 @@
         'choose-option'
     ])
 
-    let chosenOption = ref(null)
-    watch(props.displayOption , () => {
-        if (props.displayOption) chosenOption.value = props.displayOption
+    let chosenOption = ref('')
+
+    watch((computed(() => props.displayOption)) , () => {
+        if (props.displayOption?.length > 0) chosenOption.value = props.displayOption
         else chosenOption.value = props.name
     })
     let opened = ref(false)
     let closable = ref(true)
 
 
-    function chooseOption(key: String, option: String) {
+    function chooseOption(key, option) {
         emit('choose-option', option)
 
         opened.value = false

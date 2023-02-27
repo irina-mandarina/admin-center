@@ -1,42 +1,51 @@
 <script setup>
     const props = defineProps({
         columns: Array,
-        data: Object,
+        data: Array,
         filters: Array,
         pageSize: Number,
         focusedRow: Object
     })
 
     const emits = defineEmits(['show-row-details'])
-    
-    let sortItem = ref(null)
+
+    let sortItem = ref('')
     let sortDirection = ref(0)
     let pageNumber = ref(1)
     let displayedData = computed (() => {
         let result = props.data
-        for (let filterIndex = 0; filterIndex < props.filters?.length; filterIndex++) {
-            let filter = props.filters[filterIndex]
-            if (filter.type === 'dropdown') {
-                result = result.filter((it) => {
-                    return it[filter.key] === filter.value})
+        if (props.data) {
+            if (props.filters) {
+                for (let filterIndex = 0; filterIndex < props.filters?.length; filterIndex++) {
+                    let filter = props.filters[filterIndex]
+                    if (filter.type === 'dropdown') {
+                        result = result.filter((it) => {
+                            if (it.hasOwnProperty(filter.key)) {
+                                return it[filter.key] === filter.value
+                            }
+                        })
+                    }
+                    else if (filter.type === 'text') {
+                        result = result.filter((it) => it[filter.key].toLowerCase().includes(filter.value.toLowerCase()))
+                    }
+                }
             }
-            else if (filter.type === 'text') {
-                result = result.filter((it) => it[filter.key].toLowerCase().includes(filter.value.toLowerCase()))
-            }
-        }
+            
 
-        let preSort = [...result]
-        if (sortDirection.value !== 0) {
-            return preSort.sort((left, right) => {
-                if (left[sortItem.value].toLowerCase() < right[sortItem.value].toLowerCase()) {
-                    return -1 * sortDirection.value
-                }
-                else if (left[sortItem.value].toLowerCase() > right[sortItem.value].toLowerCase()) {
-                    return 1 * sortDirection.value
-                }
-                else return 0
-            })
+            let preSort = [...result]
+            if (sortDirection.value !== 0) {
+                return preSort.sort((left, right) => {
+                    if (left[sortItem.value].toLowerCase() < right[sortItem.value].toLowerCase()) {
+                        return -1 * sortDirection.value
+                    }
+                    else if (left[sortItem.value].toLowerCase() > right[sortItem.value].toLowerCase()) {
+                        return 1 * sortDirection.value
+                    }
+                    else return 0
+                })
+            }    
         }
+        
 
         return result
     })

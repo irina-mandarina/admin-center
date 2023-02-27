@@ -2,6 +2,7 @@
     const props = defineProps({
         title: String,
         infoMap: Map,
+        // details: RightSideDetails,
         details: Object
     })
 </script>

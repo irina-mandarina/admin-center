@@ -1,42 +1,13 @@
-<script setup lang="ts">
-    const _debounce  = require('lodash/debounce')
-    const _pickBy = require('lodash/pickBy')
-    const JobStore = require('~~/stores/JobStore')
-    const JobType = require('~~/objects/jobType')
-    const ResourceType = require('~~/objects/resourceType')
-    const StatusType = require('~~/objects/statusType')
-
-    interface Column {
-        key: string;
-        name: string;
-    }
-
-    interface Filter {
-        name: string;
-        id: string;
-        owner: string;
-        type: string;
-        date: string;
-        resource: string;
-        status: string;
-        [key: string]: string | undefined;
-    }
-
-    interface ActiveFilter {
-        key: string;
-        value: string;
-        type: string;
-    }
-
-    interface RightSideDetails {
-        text: string;
-        database: string;
-        type: string;
-    }
+<script setup>
+    import _debounce from 'lodash/debounce'
+    import _pickBy from 'lodash/pickBy'
+    import { JobStore } from '~~/stores/JobStore'
+    import { JobType } from '~/objects/jobType'
+    import { StatusType } from '~/objects/statusType'
+    import { ResourceType } from '~/objects/resourceType'
 
     const jobStore = JobStore()
-    
-
+    jobStore.initJobs()
     let jobs = computed(() => jobStore.jobs)
     let columns = [
         { key: 'name', name:'Job name'},
@@ -49,7 +20,9 @@
 
     let pageSize = ref(5)
 
-    let filters: Filter =  reactive({
+    let activeFilters = ref(null)
+
+    let filters =  reactive({
         name: '',
         id: '',
         owner: '',
@@ -59,24 +32,22 @@
         status: '',
     })
 
-    let activeFilters = ref<ActiveFilter[] | null>(null)
-    
     const router = useRouter()
     const route = useRoute()
-    let ok = ref<boolean>(false)
+    let ok = ref(false)
 
-    let rightSideInfo = ref<Map<string, string> | null>(null)
-    let rightSideTitle = ref<string | null>(null)
-    let focusedJob = ref<Job | null>(null)
-    let rightSideDetails = ref<RightSideDetails | null>(null)
+    let rightSideInfo = ref(null)
+    let rightSideTitle = ref(null)
+    let focusedJob = ref(null)
+    let rightSideDetails = ref(null)
 
     onBeforeMount(() => {
-        filters.name = route.query.name?
-        filters.owner = route.query.owner?
-        filters.id = route.query.id?
-        filters.type = route.query.type?
-        filters.resource = route.query.resource?
-        filters.status = route.query.status?
+        filters.name = route.query.name
+        filters.owner = route.query.owner
+        filters.id = route.query.id
+        filters.type = route.query.type
+        filters.resource = route.query.resource
+        filters.status = route.query.status
 
         fillActiveFilters()
         ok.value = true
@@ -87,41 +58,42 @@
         fillActiveFilters()
     }, 500))
 
-    function fillActiveFilters(): void {
-        let query: Map<string, string> = new Map<string, string>()
+    function fillActiveFilters() {
+        let query = {}
         activeFilters.value = []
-        for (let filter: string in _pickBy(filters)) {
-            query.set(filter, filters[filter]!)
-            let type: string
+        for (let filter in _pickBy(filters)) {
+            query[filter] = filters[filter]
+            let type
             if (['type', 'resource', 'status'].includes(filter)) type = 'dropdown'
             else type = 'text'
             activeFilters.value.push({
                 key: filter,
-                value: filters[filter]!,
+                value: filters[filter],
                 type
             })
         }
+        console.log(query)
         router.push({query})
     }
 
-    function setStatus(status: string): void {
+    function setStatus(status) {
         filters.status = status
     }
 
-    function setJobType(job: string): void {
+    function setJobType(job) {
         filters.type = job
     }
 
-    function setResource(resource: string): void {
+    function setResource(resource) {
         filters.resource = resource
     }
 
-    function showJobDetails(job: Job) {
+    function showJobDetails(job) {
         clearJobDetails()
         rightSideTitle.value = "Job ID: " + job.id
         rightSideInfo.value = new Map()
         for (let jobDetail in job) {
-            rightSideInfo.value.set(columns.filter((col) => col.key === jobDetail)[0].name, job[jobDetail]!)
+            rightSideInfo.value.set(columns.filter((col) => col.key === jobDetail)[0].name, job[jobDetail])
         }
         focusedJob.value = job
         console.log(focusedJob.value)
@@ -134,7 +106,7 @@
         }
     }
 
-    function clearJobDetails(): void {
+    function clearJobDetails() {
         rightSideInfo.value = null
         rightSideTitle.value = null
         focusedJob.value = null
@@ -178,5 +150,5 @@
 
     </div>
     
-    <RightSideBar v-if="rightSideTitle !== null" :title="rightSideTitle" :info-map="rightSideInfo" :details="rightSideDetails" @close-bar="clearJobDetails" />
+    <!-- <RightSideBar v-if="rightSideTitle !== null" :title="rightSideTitle" :info-map="rightSideInfo" :details="rightSideDetails" @close-bar="clearJobDetails" /> -->
 </template>

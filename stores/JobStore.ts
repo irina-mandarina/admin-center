@@ -1,4 +1,10 @@
 import { defineStore } from 'pinia'
+import { JobType } from '~/objects/jobType'
+import { StatusType } from '~/objects/statusType'
+import { ResourceType } from '~/objects/resourceType'
+import { Job } from '~/objects/job'
+
+// const defineStore = require('pinia')
 
 type Jobs = {
     jobs: Job[];
@@ -11,7 +17,7 @@ export const JobStore = defineStore('jobStore', {
     } as Jobs),
 
     actions: {
-        initJobs() {
+        initJobs(): void {
                 this.jobs = [
                     {name: "DB1.mdf", id: "42gret4w", type: JobType.Alter, owner: "John Smith", resource: ResourceType.Report, date: '1/30/2023 - 1/30/2023', status: StatusType.InProgress},
                     {name: "DB2.mdf", id: "rfsfvs424", type: JobType.Alter, owner: "John SmithSmith", resource: ResourceType.Profile, date: '1/30/2023 - 1/30/2023', status: StatusType.Success},
