@@ -96,3 +96,34 @@ test("Test for sorting items", () => {
     // red should be the first one
     expect(wrapper.find("table-cell").text()).toContain("red")
 })
+
+
+test("Test for filtering items", () => {
+    const wrapper = mount(TableTable, {
+        props: {
+            columns: [
+                {name: "Colour", key: "colour"},
+                {name: "Height", key: "height"},
+                {name: "Number of ribbons", key: "ribbonsNumber"},
+            ],
+            data: [
+                {colour: "red", height: "1.80", ribbonsNumber: "5"},
+                {colour: "green", height: "toe", ribbonsNumber: "many"},
+                {colour: "gray", height: "underground", ribbonsNumber: "much"},
+            ],
+            filters: [
+                {key: 'colour', value: 'gr', type: 'text'}
+            ],
+            pageSize: 3,
+            focusedRow: null
+        }
+    }) 
+    
+    expect(wrapper.text()).toContain("gray")
+    expect(wrapper.text()).toContain("green")
+    expect(wrapper.text().toContain("red")).toBe(false)
+
+    // sort the items
+    wrapper.find("th").trigger("click")
+    expect(wrapper.find("table-cell").text()).toContain("gray")
+})
