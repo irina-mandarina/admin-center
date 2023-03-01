@@ -1,13 +1,11 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-    css: ['~/assets/css/main.css'],
-    postcss: {
-        plugins: {
-          tailwindcss: {},
-          autoprefixer: {},
-        },
-      },
-      modules: [
-        '@pinia/nuxt'
-      ]
+    buildModules: ['@nuxt/typescript-build'],
+    typescript: {
+      strict: true
+    },
+    modules: [
+      '@nuxtjs/tailwindcss',
+      '@pinia/nuxt'
+    ]
 })

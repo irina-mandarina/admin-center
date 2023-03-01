@@ -5,32 +5,17 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
-    "test": "jest"
+    "postinstall": "nuxt prepare"
   },
   "devDependencies": {
-    "@types/lodash": "^4.14.191",
-    "@vue/test-utils": "^2.3.0",
-    "autoprefixer": "^10.4.13",
-    "jest": "^29.4.3",
-    "nuxt": "^3.1.0",
-    "postcss": "^8.4.21",
-    "tailwindcss": "^3.2.4"
+    "@nuxt/types": "^2.16.0",
+    "@nuxt/typescript-build": "^2.1.0",
+    "@nuxtjs/tailwindcss": "^6.4.1",
+    "nuxt": "^3.2.3"
   },
   "dependencies": {
-    "@babel/preset-typescript": "^7.21.0",
-    "@fortawesome/fontawesome-svg-core": "^6.2.1",
-    "@fortawesome/vue-fontawesome": "^3.0.3",
     "@pinia/nuxt": "^0.4.7",
-    "lodash": "^4.17.21",
-    "pinia": "^2.0.32",
-    "ts-node": "^10.9.1"
-  },
-  "overrides": {
-    "vue": "latest"
-  },
-  "jest": {
-    "verbose": true,
-    "preset": "vite-jest"
+    "@types/lodash.debounce": "^4.0.7",
+    "pinia": "^2.0.32"
   }
 }
